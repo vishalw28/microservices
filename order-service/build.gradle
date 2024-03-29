@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id("com.google.osdetector") version "1.7.0"
+}
+
+group = 'com.viwagh.orderservice'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+ext {
+    set('springCloudVersion', "2023.0.0")
+}
+
+ext['kafka.version'] = '3.5.0'
+ext['spring-kafka.version'] = '3.1.1'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    //Resilience dependency
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //Distributed Tracing : To trace the failure in the microservices flow where traceId across services & spanId will unique to service
+    //compile 'org.springframework.cloud:spring-cloud-starter-sleuth' -- Support till 3.1 -> replacement -> micrometer
+    //implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
+    //Kafka dependencies
+    implementation 'org.springframework.kafka:spring-kafka'
+//    implementation 'org.apache.kafka:kafka-streams'
+    if (osdetector.arch.equals("aarch_64")) {
+        implementation("io.netty:netty-all")
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+tasks.named('test') {
+    useJUnitPlatform()
+}

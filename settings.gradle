@@ -1,0 +1,15 @@
+rootProject.name = 'microservice-new'
+include 'product-service'
+include 'order-service'
+include 'inventory-service'
+
+//project("product-service"){
+//    dependencies {
+//        compile project("microser")
+//    }
+//}
+include 'discovery-server'
+include 'testclient'
+include 'api-gateway'
+include 'notification-service'
+
